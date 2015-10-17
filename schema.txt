@@ -1,0 +1,13 @@
+CREATE TABLE Models (
+    id INTEGER PRIMARY KEY,
+    year INT(4) NOT NULL,
+    brand_name VARCHAR(50) NULL,
+    name VARCHAR(50) NOT NULL
+);
+CREATE TABLE Brands (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    founded INT(4),
+    headquarters VARCHAR(50),
+    discontinued INT(4)
+);

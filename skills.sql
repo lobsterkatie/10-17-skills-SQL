@@ -59,6 +59,13 @@ WHERE m.year = 1960;
     --   LEFT JOIN brands AS b
     --     ON b.name = m.brand_name
     -- WHERE b.discontinued IS NULL;
+SELECT b.name, b.founded 
+FROM Brands as b LEFT JOIN Models as m ON b.name = m.brand_name 
+WHERE b.discontinued IS NULL 
+GROUP BY b.name;
+
+-- Note that I did two things which weren't explicitly called for but which made sense to me based on the way the question was worded, to wit: I grouped by brand name ('list all the brands' to me sounds like once each) and then I took off the model name (since we're talking about brands, not models, so just picking a random model to list next to the name seemed odd).
+
 
 -- 2. Modify this left join so it only selects models that have brands in the Brands table.
 -- before: 
@@ -68,9 +75,14 @@ WHERE m.year = 1960;
     -- FROM Models AS m
     --   LEFT JOIN Brands AS b
     --     ON b.name = m.brand_name;
+SELECT m.name, m.brand_name, b.founded 
+FROM Models as m LEFT JOIN Brands as b ON m.brand_name = b.name;
 
 -- followup question: In your own words, describe the difference between 
 -- left joins and inner joins.
+-- A LEFT JOIN B is basically A union (A intersect B). In other words, you get everything from A, regardless of whether it's also in B, along with everything from B *which is also in A.*
+-- A (INNER) JOIN B is basically A intersect B. In other words, you get only things which appear in both tables.
+
 
 -- 3. Modify the query so that it only selects brands that don't have any models in the models table. 
 -- (Hint: it should only show Tesla's row.)
@@ -81,6 +93,10 @@ WHERE m.year = 1960;
     --   LEFT JOIN Models
     --     ON brands.name = Models.brand_name
     -- WHERE Models.year > 1940;
+SELECT b.name 
+FROM Brands AS b LEFT JOIN Models as m ON b.name = m.brand_name 
+WHERE m.name IS NULL;
+
 
 -- 4. Modify the query to add another column to the results to show 
 -- the number of years from the year of the model until the brand becomes discontinued
@@ -94,7 +110,12 @@ WHERE m.year = 1960;
     --   LEFT JOIN brands AS b
     --     ON m.brand_name = b.name
     -- WHERE b.discontinued NOT NULL;
+SELECT m.year, b.name, m.name, b.founded, b.discontinued, 
+       (b.discontinued - b.founded) AS years_until_brand_discontinued 
+FROM Models as m JOIN Brands as b ON m.brand_name = b.name 
+WHERE b.discontinued IS NOT NULL;
 
+-- Note that I also added a column for when the brand was founded, because even though the columns were labeled with headers, it was still disconcerting to see two years and then a differene, wherein the difference wasn't actually the difference between those two years. For the same reason, I moved the model year to the first column.
 
 
 

@@ -122,6 +122,10 @@ WHERE b.discontinued IS NOT NULL;
 -- Part 3: Further Study
 
 -- 1. Select the name of any brand with more than 5 models in the database.
+SELECT brand_name, COUNT(*) 
+FROM Models 
+GROUP BY brand_name 
+HAVING COUNT(*) > 5;
 
 -- 2. Add the following rows to the Models table.
 
@@ -129,11 +133,22 @@ WHERE b.discontinued IS NOT NULL;
 -- ----    ----       ----------
 -- 2015    Chevrolet  Malibu
 -- 2015    Subaru     Outback
+INSERT INTO Models (year, brand_name, name) 
+VALUES ('2015', 'Chevrolet', 'Malibu'), ('2015', 'Subaru', 'Outback');
+--NOTE: the headings above are reversed, which I didn't realize until everything broke down in number 4.
+
 
 -- 3. Write a SQL statement to crate a table called `Awards`
 --    with columns `name`, `year`, and `winner`. Choose
 --    an appropriate datatype and nullability for each column
 --   (no need to do subqueries here).
+CREATE TABLE Awards (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+name VARCHAR(50) NOT NULL,
+year INT(4) NOT NULL,
+winner VARCHAR(50)
+);
+
 
 -- 4. Write a SQL statement that adds the following rows to the Awards table:
 
@@ -141,9 +156,33 @@ WHERE b.discontinued IS NOT NULL;
 --   ----                 ----      ---------------
 --   IIHS Safety Award    2015      the id for the 2015 Chevrolet Malibu
 --   IIHS Safety Award    2015      the id for the 2015 Subaru Outback
+INSERT INTO Awards(name, year, winner_model_id)
+VALUES ('IIHS Safety Award',
+        '2015',
+        (SELECT id FROM Models WHERE
+             year = 2015 AND
+             brand_name LIKE 'Chevrolet' AND
+             name LIKE 'Malibu')
+        );
+INSERT INTO Awards(name, year, winner_model_id)
+VALUES ('IIHS Safety Award',
+        '2015',
+        (SELECT id FROM Models WHERE
+             year = 2015 AND
+             brand_name LIKE 'Subaru' AND
+             name LIKE 'Outback')
+        );
+--NOTE: dropped and remade the table from #3 to reflect the more explanatory third column title.
+
 
 -- 5. Using a subquery, select only the *name* of any model whose 
 -- year is the same year that *any* brand was founded.
+SELECT m.year AS model_year, 
+       m.name AS model, 
+       b.name AS brand, 
+       b.founded 
+FROM Models AS m JOIN Brands AS b ON m.year = b.founded;
+--NOTE: this obviously gives three columns not requested, but they make it easier to tell that the answer is right. If you just wanted the model name, clearly you could just take those other columns out of the query.
 
 
 
